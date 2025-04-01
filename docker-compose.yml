@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: eldrige
       POSTGRES_PASSWORD: kendrick7
-      POSTGRES_DB: easygo
+      POSTGRES_DB: alu-globe
     ports:
       - '5432:5432'
     volumes:
@@ -16,11 +16,11 @@ services:
 
   app:
     build: .
-    container_name: easy-go-app
+    container_name: alu-globe-backend
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: 'postgresql://eldrige:kendrick7@postgres:5432/easygo'
+      DATABASE_URL: 'postgresql://eldrige:kendrick7@postgres:5432/alu-globe'
     ports:
       - '2000:2000'
     volumes:

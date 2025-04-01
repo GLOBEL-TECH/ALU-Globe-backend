@@ -7,71 +7,243 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  phone    String?
-  bookings   Booking[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  avatar   String?
-  password String
-}
-
-model BusCompany {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  phone    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  routes    Route[]
-}
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  password       String
+  country        String
+  intake         String
+  bio            String?
+  profilePicture String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
 
-model Route {
-  id        String   @id @default(cuid())
-  bus_company_id     String
-  bus_company BusCompany @relation(fields: [bus_company_id], references: [id], onDelete: Cascade)
-  schedules Schedule[]
-  from      String
-  to        String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  topicInterests TopicInterest[]
+  hobbies        Hobby[]
+  posts          Post[]
+  comments       Comment[]
+  postLikes      PostLike[]
+  clubMembers    ClubMember[]
+  clubRequests   ClubRequest[]
+  ventureMembers VentureMember[]
+  ventureRequests VentureRequest[]
+  organizedEvents Event[]
+  eventAttendees EventAttendee[]
+  countryGroups  CountryGroupMember[]
+  intakeGroups   IntakeGroupMember[]
+  topicRooms     TopicRoom[]
+  topicRoomMembers TopicRoomMember[]
 }
 
 
-model Schedule {
-  id          String   @id @default(cuid())
-  route_id       String
-  route       Route @relation(fields: [route_id], references: [id])
-  departure_time DateTime @default(now())
-  available_seats Int
-  price           Float
-  bookings    Booking[]
+
+enum TopicInterest {
+  TECHNOLOGY
+  LEADERSHIP
+  ENTREPRENEURSHIP
+  DESIGN
+  SUSTAINABILITY
+  FINANCE
+  MARKETING
+  HEALTHCARE
+}
+
+
+enum Hobby {
+  GAMING
+  READING
+  CODING
+  TRADING
+  HIKING
+  BASKETBALL
+  FOOTBALL
+  MUSIC
+  ARTS
+} 
+
+
+model Post {
+  id        String   @id @default(uuid())
+  authorId  String
+  content   String
+  media     String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author    User     @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+  likes     PostLike[]
+}
+
+model PostLike {
+  id     String @id @default(uuid())
+  postId String
+  userId String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  comment   String
+  createdAt DateTime @default(now())
+
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Club {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  logo        String?
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     ClubMember[]
+  requests    ClubRequest[]
 }
 
-model Booking {
-  id         String   @id @default(cuid())
-  user_id     String
-  user       User @relation(fields: [user_id], references: [id])
-  schedule_id String
-  schedule   Schedule @relation(fields: [schedule_id], references: [id])
-  status     BookingStatus @default(PENDING)
-  booking_date  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model ClubMember {
+  id      String @id @default(uuid())
+  clubId  String
+  userId  String
+  role    ClubRole
 
-  @@index([user_id, booking_date])
-  @@unique([user_id, schedule_id])
+  club    Club   @relation(fields: [clubId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
 }
 
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELED
-  COMPLETED
-  REJECTED
+enum ClubRole {
+  MEMBER
+  ADMIN
+}
+
+model ClubRequest {
+  id     String @id @default(uuid())
+  clubId String
+  userId String
+
+  club   Club   @relation(fields: [clubId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Venture {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     VentureMember[]
+  requests    VentureRequest[]
+}
+
+model VentureMember {
+  id        String @id @default(uuid())
+  ventureId String
+  userId    String
+  role      VentureRole
+
+  venture   Venture @relation(fields: [ventureId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+enum VentureRole {
+  FOUNDER
+  CONTRIBUTOR
+}
+
+model VentureRequest {
+  id        String @id @default(uuid())
+  ventureId String
+  userId    String
+
+  venture   Venture @relation(fields: [ventureId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  date        DateTime
+  location    String
+  organizerId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organizer   User     @relation(fields: [organizerId], references: [id])
+  attendees   EventAttendee[]
+}
+
+model EventAttendee {
+  id      String @id @default(uuid())
+  eventId String
+  userId  String
+
+  event   Event @relation(fields: [eventId], references: [id])
+  user    User  @relation(fields: [userId], references: [id])
+}
+
+model CountryGroup {
+  id        String   @id @default(uuid())
+  country   String
+  createdAt DateTime @default(now())
+
+  members   CountryGroupMember[]
+}
+
+model CountryGroupMember {
+  id       String @id @default(uuid())
+  groupId  String
+  userId   String
+
+  group    CountryGroup @relation(fields: [groupId], references: [id])
+  user     User         @relation(fields: [userId], references: [id])
+}
+
+model IntakeGroup {
+  id        String   @id @default(uuid())
+  intake    String
+  createdAt DateTime @default(now())
+
+  members   IntakeGroupMember[]
+}
+
+model IntakeGroupMember {
+  id       String @id @default(uuid())
+  groupId  String
+  userId   String
+
+  group    IntakeGroup @relation(fields: [groupId], references: [id])
+  user     User        @relation(fields: [userId], references: [id])
+}
+
+model TopicRoom {
+  id          String   @id @default(uuid())
+  name        String
+  createdById String
+  audioCallId String?
+  videoCallId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  members     TopicRoomMember[]
+}
+
+model TopicRoomMember {
+  id      String @id @default(uuid())
+  roomId  String
+  userId  String
+
+  room    TopicRoom @relation(fields: [roomId], references: [id])
+  user    User      @relation(fields: [userId], references: [id])
 }

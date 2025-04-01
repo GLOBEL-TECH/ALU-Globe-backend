@@ -22,7 +22,6 @@ export const getMe = catchAsync(async (req, res) => {
 });
 
 export const signUp = catchAsync(async (req, res, next) => {
-  console.log('We are here');
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
     return next(new AppError('Please provide all the required fields', 400));

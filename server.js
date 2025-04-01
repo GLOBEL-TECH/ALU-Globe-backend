@@ -1,20 +1,15 @@
-process.on('uncaughtException', (err) => {
-  console.error(err.name, err.message);
-  console.log('Unhandled exception, shutting down.........');
-  process.exit(1);
-});
-
 import app from './app.js';
-
-// const app = require('./app');
-// const connectDB = require('./config/db');
-
-// connectDB();
 
 const PORT = process.env.PORT || 2000;
 const server = app.listen(PORT, () =>
   console.log(`Server is running in development mode on port : ${PORT} `)
 );
+
+process.on('uncaughtException', (err) => {
+  console.error(err.name, err.message);
+  console.log('Unhandled exception, shutting down.........');
+  process.exit(1);
+});
 
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);

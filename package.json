@@ -1,14 +1,14 @@
 {
-  "name": "technical-interview-lala",
+  "name": "alu-globe-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Repo for ALU-Globe backend",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
     "dev": "NODE_ENV=development nodemon server.js",
     "prod": "NODE_ENV=production nodemon server.js",
     "docker-start": "docker compose up",
-    "doc": "docker run -p 2000:2000 easy-g"
+    "doc": "docker run -p 2000:2000 alu-globe-backend"
   },
   "type": "module",
   "keywords": [],
