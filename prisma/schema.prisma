@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone    String?
+  bookings   Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  avatar   String?
+  password String
+}
+
+model BusCompany {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  routes    Route[]
+}
+
+
+model Route {
+  id        String   @id @default(cuid())
+  bus_company_id     String
+  bus_company BusCompany @relation(fields: [bus_company_id], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+  from      String
+  to        String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Schedule {
+  id          String   @id @default(cuid())
+  route_id       String
+  route       Route @relation(fields: [route_id], references: [id])
+  departure_time DateTime @default(now())
+  available_seats Int
+  price           Float
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+}
+
+model Booking {
+  id         String   @id @default(cuid())
+  user_id     String
+  user       User @relation(fields: [user_id], references: [id])
+  schedule_id String
+  schedule   Schedule @relation(fields: [schedule_id], references: [id])
+  status     BookingStatus @default(PENDING)
+  booking_date  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([user_id, booking_date])
+  @@unique([user_id, schedule_id])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+  COMPLETED
+  REJECTED
+}
