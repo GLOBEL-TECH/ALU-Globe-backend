@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 import jwt from 'jsonwebtoken';
 import prisma from '../prisma-client.js';
 

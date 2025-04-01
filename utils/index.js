@@ -1,5 +1,6 @@
+/* eslint-disable no-undef */
+
 import jwt from 'jsonwebtoken';
-const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
 export const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
