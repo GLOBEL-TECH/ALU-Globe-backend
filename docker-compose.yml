@@ -3,7 +3,7 @@ version: '3'
 services:
   postgres:
     image: postgres:15
-    container_name: postgres-db
+    container_name: alu-globe-postgres
     restart: always
     environment:
       POSTGRES_USER: eldrige
