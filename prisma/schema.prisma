@@ -5,19 +5,21 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
   id             String   @id @default(uuid())
   name           String
   email          String   @unique
-  password       String
-  country        String
-  intake         String
+  password       String?
+  country        String?
+  intake         String?
   bio            String?
   profilePicture String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  isOnboarded    Boolean  @default(false)
 
 
   topicInterests TopicInterest[]
@@ -71,6 +73,7 @@ model Post {
   media     String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  countryGroupId String?
 
   author    User     @relation(fields: [authorId], references: [id])
   comments  Comment[]
@@ -196,7 +199,7 @@ model CountryGroup {
   id        String   @id @default(uuid())
   country   String
   createdAt DateTime @default(now())
-
+  banner   String?
   members   CountryGroupMember[]
 }
 

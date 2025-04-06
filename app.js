@@ -18,4 +18,18 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
+app.use((err, req, res) => {
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.statusText,
+    });
+  }
+
+  res.status(500).json({
+    status: 'error',
+    message: 'Something went wrong!',
+  });
+});
+
 export default app;

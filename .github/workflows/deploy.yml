@@ -1,44 +1,45 @@
-name: ci
+name: Deploy Node.js App
 
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          node-version: 16
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Install dependencies
+        run: npm install
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: |
-            peldrige/alu-globe-backend:latest
-            peldrige/alu-globe-backend:${{ github.sha }}
-
-      - name: Deploy to web-01
+      - name: Deploy to Ubuntu Server
         uses: appleboy/ssh-action@v0.1.9
         with:
-          host: ${{ secrets.AWS_EC2_IP_ADDRESS }}
-          username: ${{ secrets.AWS_HOST_USER }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd app/alu-globe-backend || exit 1
+            cd ~/app/ALU-Globe-backend 
             git pull origin main
-            sudo docker compose down
-            sudo docker compose up -d --build
+            npm install
+            sudo npm install -g pm2
+            pm2 restart server.js || pm2 start server.js --name "ALU_GLOBE"
+
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo systemctl reload nginx
+            sudo systemctl restart nginx
