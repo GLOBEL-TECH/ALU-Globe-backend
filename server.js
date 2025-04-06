@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import app from './app.js';
 
 const PORT = process.env.PORT || 2000;
