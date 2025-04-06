@@ -1,63 +1,75 @@
 import prisma from '../prisma-client.js';
-import bcrypt from 'bcryptjs';
 import catchAsync from '../utils/catch-async.js';
 import AppError from '../utils/appError.js';
 import { createSendToken } from '../utils/index.js';
+import { google } from 'googleapis';
+const CALLBACK_URL = 'http://localhost:8000';
 
-export const logout = (req, res) => {
-  res.json({ message: 'Logged out successfully' });
-};
+const initGoogle = () =>
+  // Authentication using OAuth 2.0
+  new google.auth.OAuth2({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: CALLBACK_URL,
+  });
 
-export const getMe = catchAsync(async (req, res) => {
+export const authWithGoogle = catchAsync(async (req, res, next) => {
+  const { access_token } = req.body;
+
+  try {
+    const auth = initGoogle();
+
+    if (!access_token) {
+      return next(new AppError('Please provide a valid access token', 400));
+    }
+
+    auth.setCredentials({
+      access_token: access_token,
+    });
+
+    const people = google.people({ version: 'v1', auth });
+
+    const { data } = await people.people.get({
+      resourceName: 'people/me',
+      personFields: 'emailAddresses,names,photos',
+    });
+
+    const name = data?.names[0].displayName;
+    const email = data?.emailAddresses[0].value;
+    const picture = data?.photos[0].url;
+
+    if (!email.endsWith('@alustudent.com')) {
+      return next(new AppError('Please provide a valid ALU email', 403));
+    }
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          name,
+          profilePicture: picture,
+        },
+      });
+    }
+
+    createSendToken(user, 200, res);
+  } catch {
+    return next(new AppError('Invalid access token', 401));
+  }
+});
+
+export const getUser = catchAsync(async (req, res) => {
   const user = await prisma.user.findUnique({
     where: {
       id: req.user.id,
     },
   });
-
-  res.json({
-    status: 200,
-    user,
-  });
-});
-
-export const signUp = catchAsync(async (req, res, next) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return next(new AppError('Please provide all the required fields', 400));
-  }
-
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (existingUser) return next(new AppError('Email is already in use', 400));
-  const hashedPassword = await bcrypt.hash(password, 12);
-  const newUser = await prisma.user.create({
+  res.status(200).json({
+    status: 'success',
     data: {
-      ...req.body,
-      name,
-      email,
-      password: hashedPassword,
+      user,
     },
   });
-  createSendToken(newUser, 201, res);
-});
-
-export const login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return next(new AppError('Please provide all the required fields', 400));
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  if (!user) return next(new AppError('Invalid email or password', 401));
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return next(new AppError('Invalid email or password', 401));
-  createSendToken(user, 200, res);
 });

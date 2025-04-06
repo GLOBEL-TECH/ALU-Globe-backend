@@ -103,10 +103,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.2.tgz#1860473de7dfa1546767448f333db80cb0ff2161"
   integrity sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==
 
-"@prisma/client@6.3.1":
-  version "6.3.1"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-6.3.1.tgz#4e4b05b27f4541ea541a601c57a8ada10b526848"
-  integrity sha512-ARAJaPs+eBkemdky/XU3cvGRl+mIPHCN2lCXsl5Vlb0E2gV+R6IN7aCI8CisRGszEZondwIsW9Iz8EJkTdykyA==
+"@prisma/client@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-6.5.0.tgz#b5f4aa3820ff523734ef4e8dffe364ac9888369e"
+  integrity sha512-M6w1Ql/BeiGoZmhMdAZUXHu5sz5HubyVcKukbLs3l0ELcQb8hTUJxtGEChhv4SVJ0QJlwtLnwOLgIRQhpsm9dw==
 
 "@prisma/debug@6.3.1":
   version "6.3.1"
@@ -890,10 +890,10 @@ googleapis-common@^7.0.0:
     url-template "^2.0.8"
     uuid "^9.0.0"
 
-googleapis@^144.0.0:
-  version "144.0.0"
-  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-144.0.0.tgz#969aff29be76e308ea75ee52f10991af4c8ddc63"
-  integrity sha512-ELcWOXtJxjPX4vsKMh+7V+jZvgPwYMlEhQFiu2sa9Qmt5veX8nwXPksOWGGN6Zk4xCiLygUyaz7xGtcMO+Onxw==
+googleapis@^148.0.0:
+  version "148.0.0"
+  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-148.0.0.tgz#0de8ccdb52bb15fcf5f170b1ec5604a1f63e7bd4"
+  integrity sha512-8PDG5VItm6E1TdZWDqtRrUJSlBcNwz0/MwCa6AL81y/RxPGXJRUwKqGZfCoVX1ZBbfr3I4NkDxBmeTyOAZSWqw==
   dependencies:
     google-auth-library "^9.0.0"
     googleapis-common "^7.0.0"
