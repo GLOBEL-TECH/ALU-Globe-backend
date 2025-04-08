@@ -18,7 +18,7 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
-app.use((err, req, res) => {
+app.use((err, _, res) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: err.status,
