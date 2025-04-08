@@ -12,7 +12,7 @@ app.use(express.json({}));
 app.use(morgan('dev'));
 app.use('/users', userRouter);
 
-app.get('/', (req, res) => res.send('Welcome to ALU-Globe API!'));
+app.get('/', (_, res) => res.send('Welcome to ALU-Globe API!'));
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
