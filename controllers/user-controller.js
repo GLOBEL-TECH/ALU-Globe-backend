@@ -55,7 +55,8 @@ export const authWithGoogle = catchAsync(async (req, res, next) => {
     }
 
     createSendToken(user, 200, res);
-  } catch {
+  } catch (err) {
+    console.log(err, 'From our fucking catchAsync');
     return next(new AppError('Invalid access token', 401));
   }
 });
