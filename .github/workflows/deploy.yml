@@ -33,6 +33,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             sudo docker pull peldrige/alu-globe:latest
-            sudo docker stop alu-globe || true
-            sudo docker rm alu-globe || true
-            sudo docker run -d --name alu-globe --env-file /home/${{ secrets.SERVER_USER }}/apps/alu-globe/.env -p 80:8000 peldrige/alu-globe:latest
+            if [ "$(sudo docker ps -q -f name=alu-globe)" ]; then
+              sudo docker stop alu-globe
+            fi
+            if [ "$(sudo docker ps -aq -f name=alu-globe)" ]; then
+              sudo docker rm alu-globe
+            fi
+            sudo docker run -d --name alu-globe --env-file /home/${{ secrets.SERVER_USER }}/apps/alu-globe/.env --restart always -p 8000:8000 peldrige/alu-globe:latest
